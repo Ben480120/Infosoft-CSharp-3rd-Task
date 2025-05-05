@@ -24,7 +24,7 @@ namespace Infosoft_CSharp_3rd_Task
 
         private void LoadCustomers()
         {
-            cmbCustomer.Items.Clear(); // Clear existing items
+            cmbCustomer.Items.Clear(); 
             string query = "SELECT customer_id, customer_name FROM customers";
 
             using (MySqlConnection conn = new MySqlConnection("server=localhost;database=bvs_db;uid=root;pwd=;"))
@@ -89,7 +89,7 @@ namespace Infosoft_CSharp_3rd_Task
 
         private void LoadVideos()
         {
-            cmbVideo.Items.Clear(); // Clear existing items
+            cmbVideo.Items.Clear(); 
             string query = "SELECT video_id, title FROM videos";
 
             using (MySqlConnection conn = new MySqlConnection("server=localhost;database=bvs_db;uid=root;pwd=;"))
@@ -150,9 +150,9 @@ namespace Infosoft_CSharp_3rd_Task
                 MessageBox.Show("Rental added.");
             }
 
-            LoadRentals(); // Refresh grid
+            LoadRentals(); 
 
-            // ✅ Reset the form selections here:
+            
             cmbCustomer.SelectedIndex = 0;
             cmbVideo.SelectedIndex = 0;
             numDays.Value = 1;
@@ -165,7 +165,7 @@ namespace Infosoft_CSharp_3rd_Task
                 return;
             }
 
-            int rentalId = Convert.ToInt32(dgvRentals.SelectedRows[0].Cells[0].Value); // rental_id
+            int rentalId = Convert.ToInt32(dgvRentals.SelectedRows[0].Cells[0].Value); 
 
             using (var conn = new MySqlConnection(connectionString))
             {
@@ -176,7 +176,7 @@ namespace Infosoft_CSharp_3rd_Task
             }
 
             MessageBox.Show("Video returned.");
-            LoadRentals(); // Refresh list
+            LoadRentals(); 
         }
 
         private void cmbCustomer_SelectedIndexChanged(object sender, EventArgs e)
