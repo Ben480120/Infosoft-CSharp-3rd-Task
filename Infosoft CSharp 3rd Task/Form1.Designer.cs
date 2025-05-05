@@ -28,13 +28,35 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.Button1 = new System.Windows.Forms.Button();
+            this.SuspendLayout();
+            // 
+            // Button1
+            // 
+            this.Button1.Location = new System.Drawing.Point(319, 293);
+            this.Button1.Name = "Button1";
+            this.Button1.Size = new System.Drawing.Size(177, 72);
+            this.Button1.TabIndex = 0;
+            this.Button1.Text = "Test Connection";
+            this.Button1.UseVisualStyleBackColor = true;
+            this.Button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.Button1);
+            this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private System.Windows.Forms.Button Button1;
     }
 }
 
