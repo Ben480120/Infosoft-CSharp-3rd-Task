@@ -52,7 +52,7 @@ namespace Infosoft_CSharp_3rd_Task
             dgvRentals.Rows.Clear();
             dgvRentals.Columns.Clear();
 
-            // Define columns first
+           
             dgvRentals.Columns.Add("rental_id", "Rental ID");
             dgvRentals.Columns.Add("customer", "Customer");
             dgvRentals.Columns.Add("video", "Video");
