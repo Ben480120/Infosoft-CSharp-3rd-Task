@@ -112,8 +112,7 @@ namespace Infosoft_CSharp_3rd_Task
                     connection.Open();
                     cmd.ExecuteNonQuery();
                     MessageBox.Show("Video deleted successfully!");
-
-                    // Refresh video list
+               
                     LoadVideos();
                 }
                 else
