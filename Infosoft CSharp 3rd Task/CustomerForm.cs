@@ -15,7 +15,7 @@ namespace Infosoft_CSharp_3rd_Task
     public partial class CustomerForm : Form
     {
         string connectionString = "server=localhost;database=bvs_db;uid=root;pwd=;";
-       
+        DataTable customerTable = new DataTable();
 
         public CustomerForm()
         {
@@ -143,10 +143,14 @@ namespace Infosoft_CSharp_3rd_Task
                 connection.Open();
                 string query = "SELECT * FROM customers";
                 MySqlDataAdapter adapter = new MySqlDataAdapter(query, connection);
-                DataTable dt = new DataTable();
-                adapter.Fill(dt);
 
-                dgvCustomers.DataSource = dt;
+                customerTable.Clear(); // Clear old data
+                adapter.Fill(customerTable); // Fill with fresh data
+
+                dgvCustomers.DataSource = customerTable.DefaultView;
+
+                // ✅ Fit the columns automatically
+                dgvCustomers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             }
             catch (Exception ex)
             {
@@ -160,8 +164,49 @@ namespace Infosoft_CSharp_3rd_Task
 
         private void CustomerForm_Load(object sender, EventArgs e)
         {
-            LoadCustomers();
+
+            LoadCustomers(); // Load customers at startup
+
+            // Autocomplete for customer name
+            AutoCompleteStringCollection customerNames = new AutoCompleteStringCollection();
+            MySqlConnection connection = new MySqlConnection(connectionString);
+
+            try
+            {
+                connection.Open();
+                string query = "SELECT customer_name FROM customers";
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    customerNames.Add(reader.GetString("customer_name"));
+                }
+
+                txtCustomerName.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                txtCustomerName.AutoCompleteSource = AutoCompleteSource.CustomSource;
+                txtCustomerName.AutoCompleteCustomSource = customerNames;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading autocomplete: " + ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
         }
+
+        private void dgvCustomers_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dgvCustomers.SelectedRows.Count > 0)
+            {
+                DataGridViewRow row = dgvCustomers.SelectedRows[0];
+                txtCustomerName.Text = row.Cells[1]?.Value?.ToString() ?? string.Empty;
+                txtPhone.Text = row.Cells[2]?.Value?.ToString() ?? string.Empty;
+            }
+        }
+
 
         private void btnClear_Click(object sender, EventArgs e)
         {
@@ -172,6 +217,20 @@ namespace Infosoft_CSharp_3rd_Task
         private void dgvCustomers_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
+        }
+
+        private void txtCustomerName_TextChanged(object sender, EventArgs e)
+        {
+            // Check if the customerTable is populated and contains the "customer_name" column
+            if (customerTable.Columns.Contains("customer_name"))
+            {
+                string filterText = txtCustomerName.Text.Trim().Replace("'", "''"); // Sanitize input
+                DataView dv = customerTable.DefaultView;
+
+                dv.RowFilter = $"customer_name LIKE '%{filterText}%'"; // Apply filter
+                dgvCustomers.DataSource = dv;
+            }
+            // If the table is not ready, do nothing (no interruption for the user)
         }
     }
 }

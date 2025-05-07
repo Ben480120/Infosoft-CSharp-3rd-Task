@@ -47,6 +47,7 @@ namespace Infosoft_CSharp_3rd_Task
                 cmbCustomer.SelectedIndex = 0;
         }
 
+        //Load Data into DGV
         private void LoadRentals()
         {
             dgvRentals.Rows.Clear();

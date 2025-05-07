@@ -12,7 +12,7 @@ namespace Infosoft_CSharp_3rd_Task
             Application.SetCompatibleTextRenderingDefault(false);
 
             
-            Application.Run(new RentalForm());  
+            Application.Run(new CustomerForm());  
         }
     }
 }
