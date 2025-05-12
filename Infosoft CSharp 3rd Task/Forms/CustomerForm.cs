@@ -20,6 +20,12 @@ namespace Infosoft_CSharp_3rd_Task
         public CustomerForm()
         {
             InitializeComponent();
+
+            FormDesignHelper.StyleDataGridView(dgvCustomers);
+            FormDesignHelper.StyleButton(btnAdd);
+            FormDesignHelper.StyleButton(btnEdit);
+            FormDesignHelper.StyleButton(btnDelete);
+            FormDesignHelper.StyleButton(btnClear);
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -144,12 +150,10 @@ namespace Infosoft_CSharp_3rd_Task
                 string query = "SELECT * FROM customers";
                 MySqlDataAdapter adapter = new MySqlDataAdapter(query, connection);
 
-                customerTable.Clear(); // Clear old data
-                adapter.Fill(customerTable); // Fill with fresh data
+                customerTable.Clear(); 
+                adapter.Fill(customerTable); 
 
-                dgvCustomers.DataSource = customerTable.DefaultView;
-
-                // ✅ Fit the columns automatically
+                dgvCustomers.DataSource = customerTable.DefaultView;            
                 dgvCustomers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             }
             catch (Exception ex)
@@ -165,9 +169,8 @@ namespace Infosoft_CSharp_3rd_Task
         private void CustomerForm_Load(object sender, EventArgs e)
         {
 
-            LoadCustomers(); // Load customers at startup
+            LoadCustomers(); 
 
-            // Autocomplete for customer name
             AutoCompleteStringCollection customerNames = new AutoCompleteStringCollection();
             MySqlConnection connection = new MySqlConnection(connectionString);
 
@@ -221,16 +224,19 @@ namespace Infosoft_CSharp_3rd_Task
 
         private void txtCustomerName_TextChanged(object sender, EventArgs e)
         {
-            // Check if the customerTable is populated and contains the "customer_name" column
             if (customerTable.Columns.Contains("customer_name"))
             {
-                string filterText = txtCustomerName.Text.Trim().Replace("'", "''"); // Sanitize input
+                string filterText = txtCustomerName.Text.Trim().Replace("'", "''"); 
                 DataView dv = customerTable.DefaultView;
 
-                dv.RowFilter = $"customer_name LIKE '%{filterText}%'"; // Apply filter
+                dv.RowFilter = $"customer_name LIKE '%{filterText}%'"; 
                 dgvCustomers.DataSource = dv;
             }
-            // If the table is not ready, do nothing (no interruption for the user)
+        }
+
+        private void pictureBoxShutdown_Click_1(object sender, EventArgs e)
+        {
+                Application.Exit(); 
         }
     }
 }

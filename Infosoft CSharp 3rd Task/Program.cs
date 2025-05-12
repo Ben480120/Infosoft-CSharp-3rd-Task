@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Infosoft_CSharp_3rd_Task;
+using System;
 using System.Windows.Forms;
 
 namespace Infosoft_CSharp_3rd_Task
@@ -12,7 +13,7 @@ namespace Infosoft_CSharp_3rd_Task
             Application.SetCompatibleTextRenderingDefault(false);
 
             
-            Application.Run(new CustomerForm());  
+            Application.Run(new VideoForm());  
         }
     }
 }

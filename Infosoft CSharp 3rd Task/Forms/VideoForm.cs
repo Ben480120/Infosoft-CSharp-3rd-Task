@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 
-
 namespace Infosoft_CSharp_3rd_Task
 {
     public partial class VideoForm : Form
@@ -18,6 +17,17 @@ namespace Infosoft_CSharp_3rd_Task
         public VideoForm()
         {
             InitializeComponent();
+
+            dgvVideos.CellClick += dgvVideos_CellClick;
+            cmbRentalDaysAllowed.Items.AddRange(new object[] { "1", "2", "3" });
+            cmbRentalDaysAllowed.SelectedIndex = 0;
+
+            FormDesignHelper.StyleDataGridView(dgvVideos);
+            FormDesignHelper.StyleButton(btnAdd);
+            FormDesignHelper.StyleButton(btnEdit);
+            FormDesignHelper.StyleButton(btnDelete);
+            FormDesignHelper.StyleButton(btnClear);
+            FormDesignHelper.StyleButton(btnSearch);
         }
 
         private void label2_Click(object sender, EventArgs e)
@@ -42,7 +52,7 @@ namespace Infosoft_CSharp_3rd_Task
                 cmd.Parameters.AddWithValue("@category", cmbCategory.SelectedItem.ToString());
                 cmd.Parameters.AddWithValue("@quantity_in", txtQuantityIn.Text);
                 cmd.Parameters.AddWithValue("@quantity_out", txtQuantityOut.Text);
-                cmd.Parameters.AddWithValue("@rental_days_allowed", txtRentalDaysAllowed.Text);
+                cmd.Parameters.AddWithValue("@rental_days_allowed", cmbRentalDaysAllowed.SelectedItem.ToString());
 
                 cmd.ExecuteNonQuery();
                 MessageBox.Show("Video added successfully!");
@@ -73,13 +83,13 @@ namespace Infosoft_CSharp_3rd_Task
                     cmd.Parameters.AddWithValue("@category", cmbCategory.SelectedItem.ToString());
                     cmd.Parameters.AddWithValue("@quantity_in", txtQuantityIn.Text);
                     cmd.Parameters.AddWithValue("@quantity_out", txtQuantityOut.Text);
-                    cmd.Parameters.AddWithValue("@rental_days_allowed", txtRentalDaysAllowed.Text);
+                    cmd.Parameters.AddWithValue("@rental_days_allowed", cmbRentalDaysAllowed.SelectedItem.ToString());
                     cmd.Parameters.AddWithValue("@id", videoId);
 
                     connection.Open();
                     cmd.ExecuteNonQuery();
                     MessageBox.Show("Video updated successfully!");
-                   
+
                     LoadVideos();
                 }
                 else
@@ -112,7 +122,7 @@ namespace Infosoft_CSharp_3rd_Task
                     connection.Open();
                     cmd.ExecuteNonQuery();
                     MessageBox.Show("Video deleted successfully!");
-               
+
                     LoadVideos();
                 }
                 else
@@ -129,8 +139,32 @@ namespace Infosoft_CSharp_3rd_Task
                 connection.Close();
             }
         }
+
         private void LoadVideos()
         {
+            dgvVideos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            // Apply design styles
+            dgvVideos.BackgroundColor = Color.FromArgb(28, 28, 28); // Dark Charcoal
+            dgvVideos.GridColor = Color.FromArgb(212, 175, 55); // Gold
+
+            // Header Style
+            dgvVideos.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(212, 175, 55); // Gold
+            dgvVideos.ColumnHeadersDefaultCellStyle.ForeColor = Color.White; // White
+            dgvVideos.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+
+            // Row Style
+            dgvVideos.DefaultCellStyle.BackColor = Color.FromArgb(46, 46, 46); // Dark Gray
+            dgvVideos.DefaultCellStyle.ForeColor = Color.White; // White
+            dgvVideos.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(60, 60, 60); // Medium Gray
+
+            // Selected Row Style
+            dgvVideos.DefaultCellStyle.SelectionBackColor = Color.FromArgb(255, 140, 0); // Dark Orange
+            dgvVideos.DefaultCellStyle.SelectionForeColor = Color.Black; // Black
+
+            // Border Style
+            dgvVideos.BorderStyle = BorderStyle.Fixed3D;
+
             MySqlConnection connection = new MySqlConnection(connectionString);
             try
             {
@@ -160,15 +194,89 @@ namespace Infosoft_CSharp_3rd_Task
         private void btnClear_Click(object sender, EventArgs e)
         {
             txtVideoTitle.Clear();
-            cmbCategory.SelectedIndex = -1; 
+            cmbCategory.SelectedIndex = -1;
             txtQuantityIn.Clear();
             txtQuantityOut.Clear();
-            txtRentalDaysAllowed.Clear();
+            cmbRentalDaysAllowed.SelectedIndex = 0;
         }
 
         private void cmbCategory_SelectedIndexChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void txtRentalDaysAllowed_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void VideoForm_Load(object sender, EventArgs e)
+        {
+            LoadVideos();
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            try
+            {
+                connection.Open();
+                string searchQuery = "SELECT * FROM videos WHERE title LIKE @search";
+                MySqlCommand cmd = new MySqlCommand(searchQuery, connection);
+                cmd.Parameters.AddWithValue("@search", "%" + txtSearchTitle.Text + "%");
+
+                MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
+                adapter.Fill(dt);
+
+                dgvVideos.DataSource = dt;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Search error: " + ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+        private void txtSearchTitle_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                btnSearch.PerformClick();
+                e.SuppressKeyPress = true;
+            }
+        }
+
+        private void dgvVideos_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = dgvVideos.Rows[e.RowIndex];
+
+                txtVideoTitle.Text = row.Cells["title"].Value.ToString();
+                cmbCategory.SelectedItem = row.Cells["category"].Value.ToString();
+                txtQuantityIn.Text = row.Cells["quantity_in"].Value.ToString();
+                txtQuantityOut.Text = row.Cells["quantity_out"].Value.ToString();
+                cmbRentalDaysAllowed.SelectedItem = row.Cells["rental_days_allowed"].Value.ToString();
+            }
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+            this.label1.BackColor = Color.Transparent;
+        }
+
+        private void dgvVideos_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void pictureBoxShutdown_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }
